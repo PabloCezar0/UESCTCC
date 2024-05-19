@@ -10,7 +10,7 @@ def create_head(radius_x, radius_y, radius_z, num_segments):
             theta = j * np.pi / (num_segments // 2)
 
             x = radius_x * np.sin(theta) * np.cos(phi)
-            y = radius_y * np.sin(theta) * np.sin(phi) + 22
+            y = radius_y * np.sin(theta) * np.sin(phi) + 16
             z = radius_z * np.cos(theta) + 83
 
             vertices.append([x, y, z])
@@ -48,8 +48,8 @@ def save_to_ply(vertices, faces, filename):
             ply_file.write(f'3 {face[0]} {face[1]} {face[2]}\n')
 
 radius_x = 9
-radius_y = 9
-radius_z = 9
+radius_y = 13
+radius_z = 13
 num_segments = 50
 vertices, faces = create_head(radius_x, radius_y, radius_z, num_segments)
 save_to_ply(vertices, faces, 'articulation_rightLeg.ply')

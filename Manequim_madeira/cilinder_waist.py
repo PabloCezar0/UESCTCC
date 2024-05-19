@@ -7,7 +7,7 @@ num_segments = 50
 radius_1_x = 18.0  
 radius_1_y = 25.0 
 radius_2_x = 18.0  
-radius_2_y = 30.0 
+radius_2_y = 28.0 
 distance_between_spheres = 30.0  
 
 

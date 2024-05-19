@@ -8,7 +8,7 @@ radius_1_x = 10.0
 radius_1_y = 7.5 
 radius_2_x = 10.0  
 radius_2_y = 7.8 
-distance_between_spheres = 52.0  
+distance_between_spheres = 60.0  
 
 
 def create_circle(radius_x, radius_y,z, num_segments):
@@ -16,13 +16,13 @@ def create_circle(radius_x, radius_y,z, num_segments):
     for i in range(num_segments):
         angle = 2 * math.pi * i / num_segments
         x = radius_x * math.cos(angle)
-        y = radius_y * math.sin(angle) + 42
+        y = radius_y * math.sin(angle) - 42
         circle_vertices.append((x, y, z))
     return circle_vertices
 
 
-circle1 = create_circle(radius_1_x, radius_1_y, -distance_between_spheres/2 + 66, num_segments)
-circle2 = create_circle(radius_2_x,radius_2_y,  distance_between_spheres/2 + 66, num_segments)
+circle1 = create_circle(radius_1_x, radius_1_y, -distance_between_spheres/2 + 70, num_segments)
+circle2 = create_circle(radius_2_x,radius_2_y,  distance_between_spheres/2 + 70, num_segments)
 
 
 vertices.extend(circle1)

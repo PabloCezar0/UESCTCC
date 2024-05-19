@@ -16,7 +16,7 @@ def create_circle(radius_x, radius_y,z, num_segments):
     for i in range(num_segments):
         angle = 2 * math.pi * i / num_segments
         x = radius_x * math.cos(angle)
-        y = radius_y * math.sin(angle) - 42
+        y = radius_y * math.sin(angle) + 42
         circle_vertices.append((x, y, z))
     return circle_vertices
 

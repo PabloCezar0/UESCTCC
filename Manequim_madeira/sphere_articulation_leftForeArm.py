@@ -10,7 +10,7 @@ def create_head(radius_x, radius_y, radius_z, num_segments):
             theta = j * np.pi / (num_segments // 2)
 
             x = radius_x * np.sin(theta) * np.cos(phi)
-            y = radius_y * np.sin(theta) * np.sin(phi) + 42
+            y = radius_y * np.sin(theta) * np.sin(phi) - 42
             z = radius_z * np.cos(theta) + 37
 
             vertices.append([x, y, z])
