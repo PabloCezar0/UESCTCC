@@ -1,0 +1,165 @@
+PImage img1, img2;
+PImage edgeImg1, edgeImg2;
+PImage interpolatedImg;
+ArrayList<PVector> edges1, edges2;
+
+void setup() {
+  size(1000, 500); 
+  
+
+  img1 = loadImage("frame_1x1.png");
+  img2 = loadImage("frame_2x1.png");
+  
+
+  img1.resize(500, 500);
+  img2.resize(500, 500);
+  
+
+  edgeImg1 = createImage(img1.width, img1.height, RGB);
+  edgeImg2 = createImage(img2.width, img2.height, RGB);
+  interpolatedImg = createImage(img1.width, img1.height, RGB);
+  
+  edges1 = extractEdges(img1, edgeImg1);
+  edges2 = extractEdges(img2, edgeImg2);
+  
+  // Reorganizar os pontos de borda da segunda imagem para corresponder aos pontos da primeira imagem
+  reorganizeEdges(edges1, edges2);
+  
+  // Ajustar a quantidade de pontos de borda
+  equalPoints(edges1, edges2);
+}
+
+void draw() {
+  background(255); // Fundo branco
+  
+  float T = map(mouseX, 0, width, 0, 1); // Usar a posição do mouse para ajustar o valor de T
+  
+  generateInterpolatedFrame(T);
+  
+  // Mostrar o frame interpolado
+  image(interpolatedImg, 250, 0); 
+}
+
+
+ArrayList<PVector> extractEdges(PImage img, PImage edgeImg) {
+  ArrayList<PVector> edges = new ArrayList<PVector>();
+  
+  img.loadPixels();
+  edgeImg.loadPixels();
+  
+  for (int x = 1; x < img.width - 1; x++) {
+    for (int y = 1; y < img.height - 1; y++) {
+      int current = img.pixels[y * img.width + x];
+      
+
+      boolean edge = false;
+      for (int dx = -1; dx <= 1; dx++) {
+        for (int dy = -1; dy <= 1; dy++) {
+          if (dx != 0 || dy != 0) {
+            int neighbor = img.pixels[(y + dy) * img.width + (x + dx)];
+            if (brightness(current) != brightness(neighbor)) {
+              edge = true;
+              break;
+            }
+          }
+        }
+        if (edge) break;
+      }
+      
+
+      if (edge) {
+        edgeImg.pixels[y * img.width + x] = color(0);
+        edges.add(new PVector(x, y));
+      } else {
+        edgeImg.pixels[y * img.width + x] = color(255); 
+      }
+    }
+  }
+  
+  edgeImg.updatePixels();
+  return edges;
+}
+
+// Função para reorganizar os pontos de borda da segunda imagem
+void reorganizeEdges(ArrayList<PVector> edges1, ArrayList<PVector> edges2) {
+  ArrayList<PVector> newEdges2 = new ArrayList<PVector>();
+  boolean[] used = new boolean[edges2.size()];
+  
+  for (PVector p1 : edges1) {
+    float minDist = Float.MAX_VALUE;
+    int minIndex = -1;
+    
+    for (int i = 0; i < edges2.size(); i++) {
+      if (!used[i]) {
+        PVector p2 = edges2.get(i);
+        float dist = PVector.dist(p1, p2);
+        if (dist < minDist) {
+          minDist = dist;
+          minIndex = i;
+        }
+      }
+    }
+    
+    if (minIndex != -1) {
+      newEdges2.add(edges2.get(minIndex));
+      used[minIndex] = true;
+    }
+  }
+  
+  edges2.clear();
+  edges2.addAll(newEdges2);
+}
+
+// Função para ajustar a quantidade de pontos de borda
+void equalPoints(ArrayList<PVector> edges1, ArrayList<PVector> edges2) {
+  while (edges1.size() != edges2.size()) {
+    if (edges1.size() > edges2.size()) {
+      int maxDistIndex = 0;
+      float maxDist = 0;
+      for (int i = 0; i < edges1.size(); i++) {
+        float dist = PVector.dist(edges1.get(i), edges2.get(i));
+        if (dist > maxDist) {
+          maxDist = dist;
+          maxDistIndex = i;
+        }
+      }
+      edges1.remove(maxDistIndex);
+    } else {
+      int maxDistIndex = 0;
+      float maxDist = 0;
+      for (int i = 0; i < edges2.size(); i++) {
+        float dist = PVector.dist(edges1.get(i), edges2.get(i));
+        if (dist > maxDist) {
+          maxDist = dist;
+          maxDistIndex = i;
+        }
+      }
+      edges2.remove(maxDistIndex);
+    }
+  }
+}
+
+// Função para gerar o frame interpolado
+void generateInterpolatedFrame(float T) {
+  interpolatedImg.loadPixels();
+  
+  // Limpar a imagem interpolada para fundo branco
+  for (int i = 0; i < interpolatedImg.pixels.length; i++) {
+    interpolatedImg.pixels[i] = color(255);
+  }
+  
+  for (int i = 0; i < edges1.size(); i++) {
+    PVector p1 = edges1.get(i);
+    PVector p2 = edges2.get(i);
+    
+    float x = lerp(p1.x, p2.x, T);
+    float y = lerp(p1.y, p2.y, T);
+    
+    int index = (int)y * interpolatedImg.width + (int)x;
+    if (index >= 0 && index < interpolatedImg.pixels.length) {
+      interpolatedImg.pixels[index] = color(0);
+    }
+  }
+  
+  interpolatedImg.updatePixels();
+}
